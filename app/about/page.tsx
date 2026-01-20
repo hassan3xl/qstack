@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button } from "../../components/ui/button";
 import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 
 export default function AboutPage() {
   return (
@@ -24,7 +25,14 @@ export default function AboutPage() {
         </div>
         <div className="relative aspect-video overflow-hidden rounded-xl border bg-muted/50 flex items-center justify-center">
           {/* Placeholder for an image or graphic */}
-          <span className="text-muted-foreground">About Image Placeholder</span>
+          <span className="text-muted-foreground">
+            <Image
+              src="/full-logo.png"
+              alt="Quantum Stack"
+              width={500}
+              height={500}
+            />
+          </span>
         </div>
       </div>
 

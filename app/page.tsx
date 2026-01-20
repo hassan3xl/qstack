@@ -1,5 +1,5 @@
-import { Hero } from "@/components/hero";
-import { Button } from "@/components/ui/button";
+import { Hero } from "../components/hero";
+import { Button } from "../components/ui/button";
 import Link from "next/link";
 import { Code, Bot, Globe, ArrowRight } from "lucide-react";
 
