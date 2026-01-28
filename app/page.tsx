@@ -2,10 +2,12 @@ import { Hero } from "../components/hero";
 import { Button } from "../components/ui/button";
 import Link from "next/link";
 import { Code, Bot, Globe, ArrowRight } from "lucide-react";
+import { BackendWarmer } from "../components/BackendWarmer";
 
 export default function Home() {
   return (
     <div className="flex flex-col gap-10">
+      <BackendWarmer />
       <Hero />
 
       {/* Services Highlight Section */}

@@ -6,17 +6,29 @@ import { Card } from "./ui/card";
 import { Linkedin, Twitter, Github, Mail } from "lucide-react";
 import { cn } from "../lib/utils";
 
-export interface StaffMember {
+export interface Role {
   id: string;
   name: string;
-  role: string;
+}
+
+export interface Skils {
+  id: string;
+  name: string;
+}
+export interface Socials {
+  platform: string;
+  url: string;
+}
+export interface StaffMember {
+  id: string;
+  slug: string;
+  full_name: string;
+  role: Role;
   bio: string;
   avatar: string;
   email?: string;
-  linkedin?: string;
-  twitter?: string;
-  github?: string;
-  skills?: string[];
+  socials: Socials[];
+  skills?: Skils[];
 }
 
 interface StaffCardProps {
@@ -25,8 +37,38 @@ interface StaffCardProps {
 }
 
 export function StaffCard({ member, className }: StaffCardProps) {
+  const getIcon = (platform: string) => {
+    switch (platform) {
+      case "linkedin":
+        return <Linkedin className="size-4" />;
+      case "twitter":
+        return <Twitter className="size-4" />;
+      case "github":
+        return <Github className="size-4" />;
+      case "email":
+        return <Mail className="size-4" />;
+      default:
+        return null;
+    }
+  };
+
+  const getSocialStyle = (platform: string) => {
+    switch (platform) {
+      case "linkedin":
+        return "hover:bg-[#0077B5] hover:text-white";
+      case "twitter":
+        return "hover:bg-[#1DA1F2] hover:text-white";
+      case "github":
+        return "hover:bg-[#333] hover:text-white";
+      case "email":
+        return "hover:bg-primary hover:text-primary-foreground";
+      default:
+        return "hover:bg-primary/10 hover:text-primary";
+    }
+  };
+
   return (
-    <Link href={`/staff/${member.id}`}>
+    <Link href={`/staff/${member.slug}`}>
       <Card
         className={cn(
           "group relative overflow-hidden p-0 border-0",
@@ -50,9 +92,9 @@ export function StaffCard({ member, className }: StaffCardProps) {
           <div className="relative mb-6">
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary via-chart-1 to-chart-2 blur-md opacity-50 group-hover:opacity-80 transition-opacity duration-500 scale-110" />
             <Avatar className="relative size-28 ring-4 ring-background shadow-xl">
-              <AvatarImage src={member.avatar} alt={member.name} />
+              <AvatarImage src={member.avatar} alt={member.full_name} />
               <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-primary to-chart-2 text-primary-foreground">
-                {member.name
+                {member.full_name
                   .split(" ")
                   .map((n) => n[0])
                   .join("")}
@@ -62,12 +104,12 @@ export function StaffCard({ member, className }: StaffCardProps) {
 
           {/* Name */}
           <h3 className="text-xl font-bold tracking-tight mb-1 group-hover:text-primary transition-colors duration-300">
-            {member.name}
+            {member.full_name}
           </h3>
 
           {/* Role badge */}
           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary mb-4">
-            {member.role}
+            {member.role.name}
           </span>
 
           {/* Bio */}
@@ -88,39 +130,21 @@ export function StaffCard({ member, className }: StaffCardProps) {
                 <Mail className="size-4" />
               </span>
             )}
-            {member.linkedin && (
+            {member.socials?.map((social, idx) => (
               <span
+                key={idx}
                 onClick={(e) => {
                   e.preventDefault();
-                  window.open(member.linkedin, "_blank");
+                  window.open(social.url, "_blank");
                 }}
-                className="p-2 rounded-full bg-background/80 hover:bg-[#0077B5] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md hover:scale-110"
+                className={cn(
+                  "p-2 rounded-full bg-background/80 transition-all duration-300 shadow-sm hover:shadow-md hover:scale-110",
+                  getSocialStyle(social.platform),
+                )}
               >
-                <Linkedin className="size-4" />
+                {getIcon(social.platform)}
               </span>
-            )}
-            {member.twitter && (
-              <span
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.open(member.twitter, "_blank");
-                }}
-                className="p-2 rounded-full bg-background/80 hover:bg-[#1DA1F2] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md hover:scale-110"
-              >
-                <Twitter className="size-4" />
-              </span>
-            )}
-            {member.github && (
-              <span
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.open(member.github, "_blank");
-                }}
-                className="p-2 rounded-full bg-background/80 hover:bg-[#333] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md hover:scale-110"
-              >
-                <Github className="size-4" />
-              </span>
-            )}
+            ))}
           </div>
         </div>
 

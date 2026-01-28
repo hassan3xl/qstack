@@ -9,105 +9,26 @@ import {
   Bot,
   ArrowRight,
 } from "lucide-react";
+import { backendUrl } from "../../lib/services/apiService";
 
+interface Tag {
+  id: string;
+  name: string;
+}
 interface Project {
   id: string;
   title: string;
   description: string;
   longDescription: string;
   image: string;
-  tags: string[];
+  tags: Tag[];
   category: "web" | "mobile" | "ai" | "enterprise";
-  liveUrl?: string;
+  url?: string;
   githubUrl?: string;
   status: "live" | "development" | "managing";
   client?: string;
+  is_pinned?: boolean;
 }
-
-const projects: Project[] = [
-  {
-    id: "onepage-revenue",
-    title: "OnePage Revenue System",
-    description:
-      "A comprehensive vehicle registration and revenue collection platform for government agencies.",
-    longDescription:
-      "Full-stack revenue management system with real-time tracking, agent management, and automated fine calculations.",
-    image: "/projects/onepage.jpg",
-    tags: ["Next.js", "TypeScript", "PostgreSQL", "FastAPI"],
-    category: "enterprise",
-    status: "managing",
-    client: "Government Agency",
-  },
-  {
-    id: "ai-chatbot-platform",
-    title: "AI Customer Support Bot",
-    description:
-      "Intelligent chatbot powered by LLMs for automated customer support and query resolution.",
-    longDescription:
-      "Custom AI solution with natural language understanding, context retention, and seamless handoff to human agents.",
-    image: "/projects/chatbot.jpg",
-    tags: ["Python", "LangChain", "OpenAI", "React"],
-    category: "ai",
-    liveUrl: "https://demo.quantumstack.tech/chatbot",
-    status: "live",
-  },
-  {
-    id: "ecommerce-platform",
-    title: "E-Commerce Platform",
-    description:
-      "Modern e-commerce solution with inventory management and payment integration.",
-    longDescription:
-      "Scalable multi-vendor marketplace with real-time inventory tracking, multiple payment gateways, and analytics dashboard.",
-    image: "/projects/ecommerce.jpg",
-    tags: ["Next.js", "Stripe", "Prisma", "Tailwind CSS"],
-    category: "web",
-    status: "live",
-  },
-  {
-    id: "healthcare-app",
-    title: "Healthcare Mobile App",
-    description:
-      "Patient-doctor communication platform with appointment scheduling and telemedicine.",
-    longDescription:
-      "Cross-platform mobile app enabling patients to book appointments, consult doctors via video, and manage prescriptions.",
-    image: "/projects/healthcare.jpg",
-    tags: ["React Native", "Node.js", "MongoDB", "WebRTC"],
-    category: "mobile",
-    status: "development",
-  },
-  {
-    id: "inventory-system",
-    title: "Inventory Management System",
-    description:
-      "Real-time inventory tracking and supply chain management for retail businesses.",
-    longDescription:
-      "Enterprise-grade inventory solution with barcode scanning, automated reordering, and multi-warehouse support.",
-    image: "/projects/inventory.jpg",
-    tags: ["Vue.js", "Django", "PostgreSQL", "Redis"],
-    category: "enterprise",
-    status: "live",
-    client: "Retail Chain",
-  },
-  {
-    id: "data-analytics",
-    title: "Business Analytics Dashboard",
-    description:
-      "Interactive data visualization and business intelligence platform.",
-    longDescription:
-      "Custom analytics solution with real-time data processing, customizable dashboards, and automated reporting.",
-    image: "/projects/analytics.jpg",
-    tags: ["React", "D3.js", "Python", "Apache Kafka"],
-    category: "web",
-    status: "managing",
-  },
-];
-
-const categoryIcons = {
-  web: Globe,
-  mobile: Smartphone,
-  ai: Bot,
-  enterprise: Globe,
-};
 
 const statusColors = {
   live: "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20",
@@ -123,7 +44,119 @@ const statusLabels = {
   managing: "Managing",
 };
 
-export default function PortfolioPage() {
+function ProjectCard({ project }: { project: Project }) {
+  return (
+    <div className="group relative overflow-hidden rounded-2xl border bg-card hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-2">
+      {/* Project Image */}
+      <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
+        {/* Gradient overlay */}
+        {project.image && (
+          <Image
+            src={project.image}
+            alt={project.title}
+            fill
+            className="object-cover"
+          />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      </div>
+
+      {/* Status Badge */}
+      <div className="absolute top-4 right-4">
+        <span
+          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${statusColors[project.status]}`}
+        >
+          {statusLabels[project.status]}
+        </span>
+      </div>
+
+      {/* Content */}
+      <div className="p-6">
+        <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
+          {project.title}
+        </h3>
+        {project.client && (
+          <p className="text-sm text-muted-foreground mb-2">
+            Client: {project.client}
+          </p>
+        )}
+        <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+          {project.description}
+        </p>
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {project?.tags?.slice(0, 5).map((tag) => (
+            <span
+              key={tag.id}
+              className="px-2 py-1 rounded-md text-xs font-medium bg-primary/5 text-primary"
+            >
+              {tag.name}
+            </span>
+          ))}
+          {project.tags?.length > 5 && (
+            <span className="px-2 py-1 rounded-md text-xs font-medium bg-muted text-muted-foreground">
+              +{project.tags.length - 5}
+            </span>
+          )}
+        </div>
+
+        {/* Links */}
+        <div className="flex items-center gap-3">
+          {project.url && (
+            <a
+              href={project.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+            >
+              <ExternalLink className="size-4" />
+              Live Demo
+            </a>
+          )}
+          {project.githubUrl && (
+            <a
+              href={project.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-primary hover:underline"
+            >
+              <Github className="size-4" />
+              Code
+            </a>
+          )}
+        </div>
+      </div>
+
+      {/* Bottom accent line */}
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-chart-1 to-chart-2 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+    </div>
+  );
+}
+
+async function portfolio(): Promise<Project[]> {
+  try {
+    const res = await fetch(`${backendUrl}/portfolio/`, {
+      // next: { revalidate: 3600 }, // Revalidate every hour
+    });
+
+    if (!res.ok) {
+      console.error("Failed to fetch staff members");
+      return [];
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error("Error fetching staff:", error);
+    return [];
+  }
+}
+
+export default async function PortfolioPage() {
+  const projects = await portfolio();
+  const pinnedProjects = projects.filter((p) => p.is_pinned);
+  const otherProjects = projects.filter((p) => !p.is_pinned);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -149,96 +182,33 @@ export default function PortfolioPage() {
       </section>
 
       {/* Projects Grid */}
+      {/* Pinned Projects Section */}
+      {pinnedProjects.length > 0 && (
+        <section className="container mx-auto px-4 w-11/12 pb-12">
+          <div className="flex items-center gap-2 mb-8">
+            <h2 className="text-2xl font-bold tracking-tight">
+              Featured Projects
+            </h2>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {pinnedProjects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* All Projects Grid */}
       <section className="container mx-auto px-4 w-11/12 pb-20 md:pb-32">
+        <div className="flex items-center gap-2 mb-8">
+          <h2 className="text-2xl font-bold tracking-tight">All Projects</h2>
+          <div className="h-px flex-1 bg-border" />
+        </div>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => {
-            const CategoryIcon = categoryIcons[project.category];
-            return (
-              <div
-                key={project.id}
-                className="group relative overflow-hidden rounded-2xl border bg-card hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-2"
-              >
-                {/* Project Image */}
-                <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <CategoryIcon className="size-16 text-muted-foreground/30" />
-                  </div>
-                  {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                </div>
-
-                {/* Status Badge */}
-                <div className="absolute top-4 right-4">
-                  <span
-                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${statusColors[project.status]}`}
-                  >
-                    {statusLabels[project.status]}
-                  </span>
-                </div>
-
-                {/* Content */}
-                <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
-                    {project.title}
-                  </h3>
-                  {project.client && (
-                    <p className="text-sm text-muted-foreground mb-2">
-                      Client: {project.client}
-                    </p>
-                  )}
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                    {project.description}
-                  </p>
-
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.tags.slice(0, 3).map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2 py-1 rounded-md text-xs font-medium bg-primary/5 text-primary"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                    {project.tags.length > 3 && (
-                      <span className="px-2 py-1 rounded-md text-xs font-medium bg-muted text-muted-foreground">
-                        +{project.tags.length - 3}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Links */}
-                  <div className="flex items-center gap-3">
-                    {project.liveUrl && (
-                      <a
-                        href={project.liveUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
-                      >
-                        <ExternalLink className="size-4" />
-                        Live Demo
-                      </a>
-                    )}
-                    {project.githubUrl && (
-                      <a
-                        href={project.githubUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-primary hover:underline"
-                      >
-                        <Github className="size-4" />
-                        Code
-                      </a>
-                    )}
-                  </div>
-                </div>
-
-                {/* Bottom accent line */}
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-chart-1 to-chart-2 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
-              </div>
-            );
-          })}
+          {otherProjects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
         </div>
       </section>
 
