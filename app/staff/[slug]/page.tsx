@@ -6,7 +6,14 @@ import {
 } from "../../../components/ui/avatar";
 import { Button } from "../../../components/ui/button";
 import { StaffMember } from "../../../components/StaffCard";
-import { ArrowLeft, Linkedin, Twitter, Github, Mail } from "lucide-react";
+import {
+  ArrowLeft,
+  Linkedin,
+  Twitter,
+  Github,
+  Mail,
+  Globe,
+} from "lucide-react";
 import { notFound } from "next/navigation";
 import { backendUrl } from "../../../lib/services/apiService";
 
@@ -84,6 +91,7 @@ export default async function StaffDetailPage({ params }: PageProps) {
               </span>
 
               {/* Social Links */}
+              {/* Social Links */}
               <div className="flex items-center justify-center md:justify-start gap-3 mt-6">
                 {member.email && (
                   <a
@@ -93,36 +101,37 @@ export default async function StaffDetailPage({ params }: PageProps) {
                     <Mail className="size-5" />
                   </a>
                 )}
-                {member.linkedin && (
-                  <a
-                    href={member.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-3 rounded-full bg-background/80 hover:bg-[#0077B5] hover:text-white transition-all duration-300 shadow-sm hover:shadow-lg hover:scale-110"
-                  >
-                    <Linkedin className="size-5" />
-                  </a>
-                )}
-                {member.twitter && (
-                  <a
-                    href={member.twitter}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-3 rounded-full bg-background/80 hover:bg-[#1DA1F2] hover:text-white transition-all duration-300 shadow-sm hover:shadow-lg hover:scale-110"
-                  >
-                    <Twitter className="size-5" />
-                  </a>
-                )}
-                {member.github && (
-                  <a
-                    href={member.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-3 rounded-full bg-background/80 hover:bg-[#333] hover:text-white transition-all duration-300 shadow-sm hover:shadow-lg hover:scale-110"
-                  >
-                    <Github className="size-5" />
-                  </a>
-                )}
+                {member.socials?.map((social, idx) => {
+                  let Icon = Globe;
+                  let hoverClass = "hover:bg-primary/10 hover:text-primary";
+
+                  switch (social.platform) {
+                    case "linkedin":
+                      Icon = Linkedin;
+                      hoverClass = "hover:bg-[#0077B5] hover:text-white";
+                      break;
+                    case "twitter":
+                      Icon = Twitter;
+                      hoverClass = "hover:bg-[#1DA1F2] hover:text-white";
+                      break;
+                    case "github":
+                      Icon = Github;
+                      hoverClass = "hover:bg-[#333] hover:text-white";
+                      break;
+                  }
+
+                  return (
+                    <a
+                      key={idx}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`p-3 rounded-full bg-background/80 transition-all duration-300 shadow-sm hover:shadow-lg hover:scale-110 ${hoverClass}`}
+                    >
+                      <Icon className="size-5" />
+                    </a>
+                  );
+                })}
               </div>
             </div>
           </div>
