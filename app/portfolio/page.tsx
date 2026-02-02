@@ -137,7 +137,7 @@ function ProjectCard({ project }: { project: Project }) {
 async function portfolio(): Promise<Project[]> {
   try {
     const res = await fetch(`${backendUrl}/portfolio/`, {
-      // next: { revalidate: 3600 }, // Revalidate every hour
+      next: { revalidate: 3600 }, // Revalidate every hour
     });
 
     if (!res.ok) {

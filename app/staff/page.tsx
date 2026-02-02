@@ -4,8 +4,7 @@ import { backendUrl } from "../../lib/services/apiService";
 async function getStaffMembers(): Promise<StaffMember[]> {
   try {
     const res = await fetch(`${backendUrl}/staff/`, {
-      // next: { revalidate: 3600 }, // Revalidate every hour
-      // next: { revalidate: 3600 }, // Revalidate every hour
+      next: { revalidate: 3600 }, // Revalidate every hour
     });
 
     if (!res.ok) {
@@ -52,7 +51,7 @@ export default async function StaffPage() {
         {staffMembers.length > 0 ? (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {staffMembers.map((member) => (
-              <StaffCard key={member.id} member={member} />
+              <StaffCard key={member.id} member={member} className="h-full" />
             ))}
           </div>
         ) : (
