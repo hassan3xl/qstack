@@ -4,7 +4,7 @@ import { backendUrl } from "../../lib/services/apiService";
 async function getStaffMembers(): Promise<StaffMember[]> {
   try {
     const res = await fetch(`${backendUrl}/staff/`, {
-      next: { revalidate: 3600 }, // Revalidate every hour
+      next: { revalidate: 60 },
     });
 
     if (!res.ok) {
@@ -21,7 +21,6 @@ async function getStaffMembers(): Promise<StaffMember[]> {
 
 export default async function StaffPage() {
   const staffMembers = await getStaffMembers();
-
   return (
     <div className="min-h-screen">
       {/* Hero Section */}

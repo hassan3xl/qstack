@@ -20,7 +20,7 @@ import { backendUrl } from "../../../lib/services/apiService";
 async function getStaffMember(slug: string): Promise<StaffMember | null> {
   try {
     const res = await fetch(`${backendUrl}/staff/${slug}/`, {
-      next: { revalidate: 3600 }, // Revalidate every hour
+      next: { revalidate: 60 }, // Revalidate every 60 seconds
     });
     if (!res.ok) {
       return null;
